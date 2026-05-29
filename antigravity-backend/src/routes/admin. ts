@@ -1,0 +1,44 @@
+import { Router, Request, Response } from 'express';
+import { getAllUsers, getPendingUsers, approveUser, rejectUser } from '../services/userService.js';
+
+const router = Router();
+
+router.get('/users', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const users = await getAllUsers();
+    res.json({ users });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+router.get('/pending', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const users = await getPendingUsers();
+    res.json({ users });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch pending users' });
+  }
+});
+
+router.post('/approve/:userId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    await approveUser(userId);
+    res.json({ message: 'User approved' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to approve user' });
+  }
+});
+
+router.post('/reject/:userId', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    await rejectUser(userId);
+    res.json({ message: 'User rejected' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reject user' });
+  }
+});
+
+export default router;
